@@ -33,7 +33,7 @@ axiosInstance.interceptors.response.use(
   },
   (error) => {
     console.error('API Error:', error)
-    if (navigateRef) {
+    if (navigateRef && error.response?.status === 401) {
       navigateRef('/', { replace: true })
     }
     return Promise.reject(error)

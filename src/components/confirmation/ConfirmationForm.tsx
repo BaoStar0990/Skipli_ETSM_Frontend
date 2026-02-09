@@ -8,6 +8,7 @@ import Input from '@mui/material/Input'
 import { useMutation } from '@tanstack/react-query'
 import userApi from '../../services/apis/user-api'
 import { useNavigate, useParams } from 'react-router-dom'
+import ErrorSnackbar from '../ErrorSnackbar'
 
 export default function ConfirmationForm() {
   const { id } = useParams()
@@ -18,10 +19,18 @@ export default function ConfirmationForm() {
   const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
+  const [errorMessage, setErrorMessage] = useState('')
+  const [isErrorOpen, setIsErrorOpen] = useState(false)
 
   const mutation = useMutation({
     mutationFn: (data: { username: string; password: string }) =>
       userApi.accountConfirmation(id!, data),
+    onError: (error) => {
+      console.error('Account confirmation failed:', error)
+      console.error('Error sending access code:', error)
+      setErrorMessage(error.message)
+      setIsErrorOpen(true)
+    },
   })
 
   const handleConfirmation = async (e: React.FormEvent) => {
@@ -98,11 +107,6 @@ export default function ConfirmationForm() {
             </button>
           </div>
         </div>
-        <div className="flex justify-end">
-          <button type="button" className="text-sm font-medium text-accent hover:underline">
-            Forgot password?
-          </button>
-        </div>
         <Button
           type="submit"
           disabled={!username.trim() || !password.trim() || isLoading}
@@ -119,6 +123,11 @@ export default function ConfirmationForm() {
           )}
         </Button>
       </form>
+      <ErrorSnackbar
+        isErrorOpen={isErrorOpen}
+        setIsErrorOpen={setIsErrorOpen}
+        errorMessage={errorMessage}
+      />
     </motion.div>
   )
 }

@@ -1,6 +1,6 @@
 import Button from '@mui/material/Button'
 import { AnimatePresence, motion } from 'motion/react'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import CloseIcon from '@mui/icons-material/Close'
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 import type { UserDTO } from '../../services/dto/user.dto'
@@ -93,6 +93,26 @@ export default function ScheduleForm({ employees, onSubmit, onClose }: ScheduleF
     return days
   }
 
+  const getAvailableDayIds = () => {
+    if (!startDate || !endDate) return DAYS_OF_WEEK.map((day) => day.id)
+
+    const rangeStart = parseDateInput(startDate)
+    const rangeEnd = parseDateInput(endDate)
+    const available = new Set<string>()
+
+    for (
+      let current = new Date(rangeStart);
+      current <= rangeEnd;
+      current.setDate(current.getDate() + 1)
+    ) {
+      available.add(getDayIdFromDate(current))
+    }
+
+    return DAYS_OF_WEEK.map((day) => day.id).filter((dayId) => available.has(dayId))
+  }
+
+  const availableDayIds = getAvailableDayIds()
+
   const validateStep = (currentStep: number): boolean => {
     const newErrors: Record<string, string> = {}
 
@@ -167,7 +187,7 @@ export default function ScheduleForm({ employees, onSubmit, onClose }: ScheduleF
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.95 }}
             onClick={onClose}
-            className="text-muted-foreground hover:text-foreground"
+            className="text-muted-foreground hover:text-foreground hover:cursor-pointer"
           >
             <CloseIcon className="w-5 h-5" />
           </motion.button>
@@ -217,10 +237,18 @@ export default function ScheduleForm({ employees, onSubmit, onClose }: ScheduleF
                         setStartDate(e.target.value)
                         if (errors.startDate) setErrors({ ...errors, startDate: '' })
                       }}
+                      onBlur={() => {
+                        const newAvailableDayIds = getAvailableDayIds()
+                        setSelectedDays((prev) =>
+                          prev.filter((dayId) => newAvailableDayIds.includes(dayId)),
+                        )
+                      }}
                       className="w-full px-4 py-2 rounded-lg border border-border bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
                     />
                     {errors.startDate && (
-                      <p className="text-xs text-destructive mt-1">{errors.startDate}</p>
+                      <p className="text-xs text-destructive mt-1 text-red-800">
+                        {errors.startDate}
+                      </p>
                     )}
                   </div>
 
@@ -235,15 +263,23 @@ export default function ScheduleForm({ employees, onSubmit, onClose }: ScheduleF
                         setEndDate(e.target.value)
                         if (errors.endDate) setErrors({ ...errors, endDate: '' })
                       }}
+                      onBlur={() => {
+                        const newAvailableDayIds = getAvailableDayIds()
+                        setSelectedDays((prev) =>
+                          prev.filter((dayId) => newAvailableDayIds.includes(dayId)),
+                        )
+                      }}
                       className="w-full px-4 py-2 rounded-lg border border-border bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
                     />
                     {errors.endDate && (
-                      <p className="text-xs text-destructive mt-1">{errors.endDate}</p>
+                      <p className="text-xs text-destructive mt-1 text-red-800">{errors.endDate}</p>
                     )}
                   </div>
                 </div>
 
-                {errors.dateRange && <p className="text-sm text-destructive">{errors.dateRange}</p>}
+                {errors.dateRange && (
+                  <p className="text-sm text-destructive text-red-800">{errors.dateRange}</p>
+                )}
 
                 {startDate && endDate && (
                   <motion.div
@@ -289,7 +325,7 @@ export default function ScheduleForm({ employees, onSubmit, onClose }: ScheduleF
                     Work Days
                   </label>
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                    {DAYS_OF_WEEK.map((day) => (
+                    {DAYS_OF_WEEK.filter((day) => availableDayIds.includes(day.id)).map((day) => (
                       <motion.button
                         key={day.id}
                         whileHover={{ scale: 1.05 }}
@@ -297,8 +333,8 @@ export default function ScheduleForm({ employees, onSubmit, onClose }: ScheduleF
                         onClick={() => toggleDay(day.id)}
                         className={`p-3 rounded-lg border-2 transition-all font-medium text-sm ${
                           selectedDays.includes(day.id)
-                            ? 'border-primary bg-primary/10 text-primary'
-                            : 'border-border bg-background text-foreground hover:border-primary/50'
+                            ? 'border-primary bg-white/10 text-primary'
+                            : 'border-border bg-sky-500 text-foreground hover:border-primary/50'
                         }`}
                       >
                         {day.label.slice(0, 3)}
@@ -306,7 +342,7 @@ export default function ScheduleForm({ employees, onSubmit, onClose }: ScheduleF
                     ))}
                   </div>
                   {errors.workDays && (
-                    <p className="text-xs text-destructive mt-2">{errors.workDays}</p>
+                    <p className="text-xs text-destructive mt-2 text-red-800">{errors.workDays}</p>
                   )}
                 </div>
 

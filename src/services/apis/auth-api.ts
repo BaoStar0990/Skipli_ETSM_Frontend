@@ -36,6 +36,12 @@ class AuthAPI {
     })
     return res.data
   }
+  logout = async () => {
+    const res = await axiosInstance.post(`${this.API_URL}/logout`).catch((error) => {
+      throw new Error(error.response?.data?.message || 'Failed to logout')
+    })
+    return res.data
+  }
 }
 
 export default new AuthAPI()

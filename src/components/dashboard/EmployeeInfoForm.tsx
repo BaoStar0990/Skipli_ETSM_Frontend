@@ -37,7 +37,6 @@ export default function EmployeeInfoForm({ employee, onSubmit, onClose }: Employ
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target
     setFormData((prev) => ({ ...prev, [name]: value }))
-    // Clear error for this field when user starts typing
     if (errors[name]) {
       setErrors((prev) => {
         const newErrors = { ...prev }
@@ -78,7 +77,7 @@ export default function EmployeeInfoForm({ employee, onSubmit, onClose }: Employ
             whileHover={{ rotate: 90, scale: 1.1 }}
             whileTap={{ scale: 0.95 }}
             onClick={onClose}
-            className="text-muted-foreground hover:text-foreground transition-colors"
+            className="text-muted-foreground hover:text-foreground transition-colors hover:cursor-pointer"
           >
             <CloseIcon className="w-6 h-6" />
           </motion.button>
@@ -92,7 +91,7 @@ export default function EmployeeInfoForm({ employee, onSubmit, onClose }: Employ
               transition={{ duration: 0.3, delay: 0.05 }}
             >
               <label htmlFor="name" className="text-sm font-medium text-foreground">
-                Full Name *
+                Full Name <span className="text-red-800">*</span>
               </label>
               <Input
                 id="name"
@@ -102,7 +101,9 @@ export default function EmployeeInfoForm({ employee, onSubmit, onClose }: Employ
                 className={`ms-1 mt-2 ${errors.name ? 'border-destructive' : ''}`}
                 placeholder="John Doe"
               />
-              {errors.name && <p className="text-xs text-destructive mt-1">{errors.name}</p>}
+              {errors.name && (
+                <p className="text-xs text-destructive mt-1 text-red-800">{errors.name}</p>
+              )}
             </motion.div>
 
             <motion.div
@@ -111,7 +112,7 @@ export default function EmployeeInfoForm({ employee, onSubmit, onClose }: Employ
               transition={{ duration: 0.3, delay: 0.1 }}
             >
               <label htmlFor="email" className="text-sm font-medium text-foreground">
-                Email Address *
+                Email Address <span className="text-red-800">*</span>
               </label>
               <Input
                 id="email"
@@ -122,7 +123,9 @@ export default function EmployeeInfoForm({ employee, onSubmit, onClose }: Employ
                 className={`ms-1 mt-2 ${errors.email ? 'border-destructive' : ''}`}
                 placeholder="john@example.com"
               />
-              {errors.email && <p className="text-xs text-destructive mt-1">{errors.email}</p>}
+              {errors.email && (
+                <p className="text-xs text-destructive mt-1 text-red-800">{errors.email}</p>
+              )}
             </motion.div>
 
             <motion.div
@@ -131,7 +134,7 @@ export default function EmployeeInfoForm({ employee, onSubmit, onClose }: Employ
               transition={{ duration: 0.3, delay: 0.1 }}
             >
               <label htmlFor="phoneNumber" className="text-sm font-medium text-foreground">
-                Phone number *
+                Phone number <span className="text-red-800">*</span>
               </label>
               <Input
                 id="phoneNumber"
@@ -143,7 +146,7 @@ export default function EmployeeInfoForm({ employee, onSubmit, onClose }: Employ
                 placeholder="+1 234 567 8901"
               />
               {errors.phoneNumber && (
-                <p className="text-xs text-destructive mt-1">{errors.phoneNumber}</p>
+                <p className="text-xs text-destructive mt-1 text-red-800">{errors.phoneNumber}</p>
               )}
             </motion.div>
 
@@ -155,7 +158,7 @@ export default function EmployeeInfoForm({ employee, onSubmit, onClose }: Employ
                   transition={{ duration: 0.3, delay: 0.1 }}
                 >
                   <label htmlFor="username" className="text-sm font-medium text-foreground">
-                    Username *
+                    Username <span className="text-red-800">*</span>
                   </label>
                   <Input
                     id="username"
@@ -167,7 +170,7 @@ export default function EmployeeInfoForm({ employee, onSubmit, onClose }: Employ
                     placeholder="johndoe"
                   />
                   {errors.username && (
-                    <p className="text-xs text-destructive mt-1">{errors.username}</p>
+                    <p className="text-xs text-destructive mt-1 text-red-800">{errors.username}</p>
                   )}
                 </motion.div>
 
@@ -177,7 +180,7 @@ export default function EmployeeInfoForm({ employee, onSubmit, onClose }: Employ
                   transition={{ duration: 0.3, delay: 0.1 }}
                 >
                   <label htmlFor="password" className="text-sm font-medium text-foreground">
-                    Password *
+                    Password <span className="text-red-800">*</span>
                   </label>
                   <Input
                     id="password"
@@ -189,7 +192,7 @@ export default function EmployeeInfoForm({ employee, onSubmit, onClose }: Employ
                     placeholder="••••••••"
                   />
                   {errors.password && (
-                    <p className="text-xs text-destructive mt-1">{errors.password}</p>
+                    <p className="text-xs text-destructive mt-1 text-red-800">{errors.password}</p>
                   )}
                 </motion.div>
               </>

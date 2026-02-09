@@ -8,6 +8,7 @@ import VisibilityIcon from '@mui/icons-material/Visibility'
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff'
 import { useMutation } from '@tanstack/react-query'
 import authApi from '../../services/apis/auth-api'
+import ErrorSnackbar from '../ErrorSnackbar'
 
 interface EmployeeCredentialFormProps {
   onSubmit: (username: string, password: string) => void
@@ -19,9 +20,20 @@ export default function EmployeeCredentialForm({ onSubmit, onBack }: EmployeeCre
   const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
+  const [errorMessage, setErrorMessage] = useState('')
+  const [isErrorOpen, setIsErrorOpen] = useState(false)
 
   const mutation = useMutation({
     mutationFn: (data: { username: string; password: string }) => authApi.loginUsername(data),
+    onSuccess: (data) => {
+      localStorage.setItem('id', data.data.user.id)
+    },
+    onError: (error) => {
+      console.error('Error during login:', error)
+      setErrorMessage(error.message)
+      setIsErrorOpen(true)
+      setIsLoading(false)
+    },
   })
 
   const handleLogin = async (e: React.FormEvent) => {
@@ -125,6 +137,11 @@ export default function EmployeeCredentialForm({ onSubmit, onBack }: EmployeeCre
           )}
         </Button>
       </form>
+      <ErrorSnackbar
+        isErrorOpen={isErrorOpen}
+        setIsErrorOpen={setIsErrorOpen}
+        errorMessage={errorMessage}
+      />
     </motion.div>
   )
 }

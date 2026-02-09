@@ -3,6 +3,10 @@ import { motion } from 'motion/react'
 import ArrowBackIcon from '@mui/icons-material/ArrowBack'
 import PhoneAndroidIcon from '@mui/icons-material/PhoneAndroid'
 import Input from '@mui/material/Input'
+import FormControl from '@mui/material/FormControl'
+import InputLabel from '@mui/material/InputLabel'
+import Select from '@mui/material/Select'
+import MenuItem from '@mui/material/MenuItem'
 import Button from '@mui/material/Button'
 import { useState } from 'react'
 import { useMutation } from '@tanstack/react-query'
@@ -14,8 +18,19 @@ interface OwnerPhoneFormProps {
   onBack: () => void
 }
 
+const countryOptions = [
+  { code: '+1', label: 'US' },
+  { code: '+44', label: 'UK' },
+  { code: '+61', label: 'Australia' },
+  { code: '+65', label: 'Singapore' },
+  { code: '+84', label: 'Vietnam' },
+  { code: '+91', label: 'India' },
+  { code: '+81', label: 'Japan' },
+]
+
 export default function OwnerPhoneForm({ onSubmit, onBack }: OwnerPhoneFormProps) {
   const [phone, setPhone] = useState('')
+  const [countryCode, setCountryCode] = useState('+1')
   const [isLoading, setIsLoading] = useState(false)
   const [errorMessage, setErrorMessage] = useState('')
   const [isErrorOpen, setIsErrorOpen] = useState(false)
@@ -31,11 +46,17 @@ export default function OwnerPhoneForm({ onSubmit, onBack }: OwnerPhoneFormProps
 
   const submitPhoneNumber = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (!phone.trim()) return
+    const phoneTrimmed = phone.trim()
+    if (!phoneTrimmed) return
     setIsLoading(true)
     try {
-      await mutation.mutateAsync({ phoneNumber: phone })
-      onSubmit(phone)
+      const localPhone = phoneTrimmed.replace(/^0+/, '')
+      if (!localPhone) return
+      const phoneNumber = phoneTrimmed.startsWith('+')
+        ? phoneTrimmed
+        : `${countryCode}${localPhone}`
+      await mutation.mutateAsync({ phoneNumber })
+      onSubmit(phoneNumber)
     } finally {
       setIsLoading(false)
     }
@@ -75,15 +96,33 @@ export default function OwnerPhoneForm({ onSubmit, onBack }: OwnerPhoneFormProps
           <label htmlFor="phone" className="text-foreground">
             Phone Number
           </label>
-          <Input
-            id="phone"
-            type="tel"
-            placeholder="+1 (555) 000-0000"
-            value={phone}
-            onChange={(e) => setPhone(e.target.value)}
-            className="h-12 text-base"
-            autoFocus
-          />
+          <div className="grid grid-cols-2 gap-2">
+            <FormControl size="small">
+              <InputLabel id="country-code-label">Country</InputLabel>
+              <Select
+                labelId="country-code-label"
+                id="country-code"
+                value={countryCode}
+                label="Country"
+                onChange={(e) => setCountryCode(e.target.value)}
+              >
+                {countryOptions.map((option) => (
+                  <MenuItem key={option.code} value={option.code}>
+                    {option.label} ({option.code})
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+            <Input
+              id="phone"
+              type="tel"
+              placeholder="555 000 0000"
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
+              className="h-12 text-base"
+              autoFocus
+            />
+          </div>
         </div>
         <Button
           type="submit"

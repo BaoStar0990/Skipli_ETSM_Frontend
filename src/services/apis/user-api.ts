@@ -1,6 +1,7 @@
 import type { UserDTO } from '../dto/user.dto'
 import axiosInstance from '../axios-config'
 import type { WorkScheduleDTO } from '../dto/work-schedule.dto'
+import type { TaskResponseDto } from '../dto/task-response.dto'
 
 interface AccountConfirmationData {
   username: string
@@ -60,6 +61,14 @@ class UserAPI {
         throw new Error(error.response?.data?.message || 'Failed to confirm account')
       })
     return res.data
+  }
+  getTasksByEmployeeId = async (employeeId: string): Promise<TaskResponseDto[]> => {
+    const res = await axiosInstance
+      .get(`${this.API_URL}/${employeeId}/tasks`, {})
+      .catch((error) => {
+        throw new Error(error.response?.data?.message || 'Failed to fetch tasks')
+      })
+    return res.data.data as TaskResponseDto[]
   }
 }
 

@@ -11,6 +11,7 @@ import userApi from '../../services/apis/user-api'
 import type { UserDTO } from '../../services/dto/user.dto'
 import type { WorkScheduleDTO } from '../../services/dto/work-schedule.dto'
 import type { WorkDayDTO } from '../../services/dto/work-day.dto'
+import scheduleApi from '../../services/apis/schedule-api'
 
 export default function ScheduleTab() {
   const [isFormOpen, setIsFormOpen] = useState(false)
@@ -24,6 +25,13 @@ export default function ScheduleTab() {
   const mutationCreateSchedule = useMutation({
     mutationFn: ({ userId, scheduleData }: { userId: string; scheduleData: WorkScheduleDTO }) =>
       userApi.createWorkSchedule(userId, scheduleData),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['schedules'] })
+    },
+  })
+
+  const mutationDeleteSchedule = useMutation({
+    mutationFn: (scheduleId: string) => scheduleApi.deleteSchedule(scheduleId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['schedules'] })
     },
@@ -45,8 +53,8 @@ export default function ScheduleTab() {
     setIsFormOpen(false)
   }
 
-  const handleDeleteSchedule = (id: string) => {
-    // setSchedules(schedules.filter((schedule) => schedule.id !== id))
+  const handleDeleteSchedule = async (id: string) => {
+    await mutationDeleteSchedule.mutateAsync(id)
   }
 
   const parseDateInput = (value: string) => {
@@ -59,9 +67,11 @@ export default function ScheduleTab() {
   }
 
   const calculateDuration = (startDate: string, endDate: string) => {
-    return Math.ceil(
-      (parseDateInput(endDate).getTime() - parseDateInput(startDate).getTime()) /
-        (1000 * 60 * 60 * 24),
+    return (
+      Math.ceil(
+        (parseDateInput(endDate).getTime() - parseDateInput(startDate).getTime()) /
+          (1000 * 60 * 60 * 24),
+      ) + 1
     )
   }
 
@@ -90,11 +100,10 @@ export default function ScheduleTab() {
 
   const getWorkDayPreview = (workDays: WorkDayDTO[]) => {
     return workDays
-      .slice(0, 3)
       .map((day) => {
-        const blocks = day.workHours.length
-        const blockLabel = blocks === 1 ? 'block' : 'blocks'
-        return `${formatDateLabel(day.date)} (${blocks} ${blockLabel})`
+        // const blocks = day.workHours.length
+        // const blockLabel = blocks === 1 ? 'block' : 'blocks'
+        return `${formatDateLabel(day.date)}`
       })
       .join(', ')
   }
@@ -161,7 +170,6 @@ export default function ScheduleTab() {
                   </div>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {/* Date Range */}
                     <div className="flex gap-3">
                       <CalendarMonthIcon className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
                       <div>
@@ -178,7 +186,6 @@ export default function ScheduleTab() {
                       </div>
                     </div>
 
-                    {/* Work Days */}
                     <div className="flex gap-3">
                       <CalendarMonthIcon className="w-5 h-5 text-sky-500 flex-shrink-0 mt-0.5" />
                       <div>
@@ -196,7 +203,6 @@ export default function ScheduleTab() {
                       </div>
                     </div>
 
-                    {/* Work Hours */}
                     <div className="flex gap-3">
                       <QueryBuilderIcon className="w-5 h-5 text-accent flex-shrink-0 mt-0.5" />
                       <div>

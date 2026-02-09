@@ -5,6 +5,8 @@ import AssignmentIcon from '@mui/icons-material/Assignment'
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth'
 import GroupsIcon from '@mui/icons-material/Groups'
 import { useNavigate } from 'react-router-dom'
+import { useMutation } from '@tanstack/react-query'
+import authApi from '../../services/apis/auth-api'
 
 interface DashboardLayoutProps {
   activeTab: TabType
@@ -20,7 +22,12 @@ export default function DashBoardLayout({
   const navigate = useNavigate()
   const isEmployee = localStorage.getItem('userRole') === 'EMPLOYEE'
 
-  const handleLogout = () => {
+  const mutation = useMutation({
+    mutationFn: authApi.logout,
+  })
+
+  const handleLogout = async () => {
+    await mutation.mutateAsync()
     localStorage.removeItem('userRole')
     navigate('/', { replace: true })
   }

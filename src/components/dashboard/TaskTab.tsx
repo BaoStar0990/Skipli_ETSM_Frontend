@@ -9,6 +9,7 @@ import type { TaskStatus } from '../../constants/TaskStatus.enum'
 import userApi from '../../services/apis/user-api'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import taskApi from '../../services/apis/task-api'
+import ErrorSnackbar from '../ErrorSnackbar'
 
 interface Task {
   id: string
@@ -22,10 +23,14 @@ interface Task {
 
 export default function TaskTab() {
   const [isFormOpen, setIsFormOpen] = useState(false)
+  const [errorMessage, setErrorMessage] = useState('')
+  const [isErrorOpen, setIsErrorOpen] = useState(false)
+  const isEmployee = localStorage.getItem('userRole') === 'EMPLOYEE'
+  const employeeId = localStorage.getItem('id') ?? ''
 
   const { data: tasks } = useQuery({
-    queryKey: ['tasks'],
-    queryFn: taskApi.getTasks,
+    queryKey: ['tasks', isEmployee ? 'employee' : 'all', employeeId],
+    queryFn: isEmployee ? () => userApi.getTasksByEmployeeId(employeeId) : taskApi.getTasks,
   })
 
   const queryClient = useQueryClient()
@@ -37,15 +42,30 @@ export default function TaskTab() {
     },
   })
 
+  const mutationDeleteTask = useMutation({
+    mutationFn: taskApi.deleteTask,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['tasks'] })
+    },
+    onError: (error) => {
+      console.error('Error deleting task:', error)
+      setErrorMessage(error.message)
+      setIsErrorOpen(true)
+    },
+  })
+
+  const mutationUpdateProgress = useMutation({
+    mutationFn: ({ taskId, progress }: { taskId: string; progress: number }) =>
+      taskApi.updateTaskProgress(taskId, progress),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['tasks'] })
+    },
+  })
+
   const { data: employeesData } = useQuery({
     queryKey: ['users'],
     queryFn: userApi.getEmployees,
   })
-
-  // const { data: tasksData } = useQuery({
-  //   queryKey: ['tasks'],
-  //   queryFn: taskApi.getTasks,
-  // })
 
   const handleCreateTask = (data: {
     name: string
@@ -57,24 +77,11 @@ export default function TaskTab() {
   }
 
   const handleDeleteTask = (id: string) => {
-    // setTasks(tasks.filter((task) => task.id !== id))
+    mutationDeleteTask.mutateAsync(id)
   }
 
-  const handleUpdateProgress = (id: string, newProgress: number) => {
-    // setTasks(
-    //   tasks.map((task) => {
-    //     if (task.id === id) {
-    //       let status: Task['status'] = 'PENDING'
-    //       if (newProgress > 0 && newProgress < 100) {
-    //         status = 'IN_PROGRESS'
-    //       } else if (newProgress === 100) {
-    //         status = 'DONE'
-    //       }
-    //       return { ...task, progress: newProgress, status }
-    //     }
-    //     return task
-    //   }),
-    // )
+  const handleUpdateProgress = async (id: string, newProgress: number) => {
+    await mutationUpdateProgress.mutateAsync({ taskId: id, progress: newProgress })
   }
 
   const getStatusColor = (status: Task['status']) => {
@@ -101,15 +108,17 @@ export default function TaskTab() {
           <h2 className="text-2xl font-bold text-foreground">Task for Employee</h2>
           <p className="text-sm text-muted-foreground mt-1">Total tasks: {tasks && tasks.length}</p>
         </div>
-        <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-          <Button
-            onClick={() => setIsFormOpen(true)}
-            className="bg-primary hover:bg-primary/90 text-primary-foreground gap-2"
-          >
-            <AddTaskIcon className="w-4 h-4" />
-            Create Task
-          </Button>
-        </motion.div>
+        {!isEmployee && (
+          <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+            <Button
+              onClick={() => setIsFormOpen(true)}
+              className="bg-primary hover:bg-primary/90 text-primary-foreground gap-2"
+            >
+              <AddTaskIcon className="w-4 h-4" />
+              Create Task
+            </Button>
+          </motion.div>
+        )}
       </div>
 
       <AnimatePresence>
@@ -151,7 +160,11 @@ export default function TaskTab() {
                     </motion.div>
                   </div>
 
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div
+                    className={`grid grid-cols-1 gap-4 ${
+                      isEmployee ? 'md:grid-cols-2' : 'md:grid-cols-3'
+                    }`}
+                  >
                     <div>
                       <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
                         Status
@@ -164,14 +177,16 @@ export default function TaskTab() {
                         {getStatusLabel(task.status)}
                       </span>
                     </div>
-                    <div>
-                      <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
-                        Assigned To
-                      </p>
-                      <p className="text-sm text-foreground font-medium mt-2">
-                        {task.employee?.name || 'Unknown'}
-                      </p>
-                    </div>
+                    {!isEmployee && (
+                      <div>
+                        <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+                          Assigned To
+                        </p>
+                        <p className="text-sm text-foreground font-medium mt-2">
+                          {task.employee?.name || 'Unknown'}
+                        </p>
+                      </div>
+                    )}
                     <div>
                       <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
                         Progress
@@ -223,17 +238,24 @@ export default function TaskTab() {
             >
               <CheckIcon className="w-16 h-16 mx-auto text-muted-foreground/30 mb-4" />
               <p className="text-muted-foreground mb-4">No tasks yet</p>
-              <Button
-                onClick={() => setIsFormOpen(true)}
-                className="gap-2 bg-primary hover:bg-primary/90 text-primary-foreground"
-              >
-                <AddTaskIcon className="w-4 h-4" />
-                Create First Task
-              </Button>
+              {!isEmployee && (
+                <Button
+                  onClick={() => setIsFormOpen(true)}
+                  className="gap-2 bg-primary hover:bg-primary/90 text-primary-foreground"
+                >
+                  <AddTaskIcon className="w-4 h-4" />
+                  Create First Task
+                </Button>
+              )}
             </motion.div>
           )}
         </AnimatePresence>
       </div>
+      <ErrorSnackbar
+        isErrorOpen={isErrorOpen}
+        setIsErrorOpen={setIsErrorOpen}
+        errorMessage={errorMessage}
+      />
     </div>
   )
 }

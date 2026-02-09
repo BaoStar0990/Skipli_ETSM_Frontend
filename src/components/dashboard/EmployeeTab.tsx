@@ -8,6 +8,7 @@ import EmployeeInfoForm from './EmployeeInfoForm'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import userApi from '../../services/apis/user-api'
 import type { UserDTO } from '../../services/dto/user.dto'
+import GroupsIcon from '@mui/icons-material/Groups'
 
 export default function EmployeeTab() {
   const { data: employeesData } = useQuery({
@@ -179,6 +180,7 @@ export default function EmployeeTab() {
               animate={{ opacity: 1 }}
               className="text-center py-12 bg-card border border-border rounded-lg"
             >
+              <GroupsIcon className="w-16 h-16 mx-auto text-muted-foreground/30 mb-4" />
               <p className="text-muted-foreground">No employees yet</p>
               <Button onClick={handleAddNew} className="mt-4 gap-2">
                 <PersonAddIcon className="w-4 h-4" />

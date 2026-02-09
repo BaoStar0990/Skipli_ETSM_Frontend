@@ -30,9 +30,6 @@ export default function TaskForm({ employees, onSubmit, onClose }: TaskFormProps
     if (!formData.name.trim()) {
       newErrors.name = 'Task name is required'
     }
-    if (!formData.description.trim()) {
-      newErrors.description = 'Description is required'
-    }
     if (!formData.employeeId) {
       newErrors.employeeId = 'Please assign an employee'
     }
@@ -103,7 +100,9 @@ export default function TaskForm({ employees, onSubmit, onClose }: TaskFormProps
             className="space-y-4"
           >
             <motion.div variants={itemVariants}>
-              <label className="block text-sm font-medium text-foreground mb-2">Task Name *</label>
+              <label className="block text-sm font-medium text-foreground mb-2">
+                Task Name <span className="text-red-800">*</span>
+              </label>
               <input
                 type="text"
                 value={formData.name}
@@ -113,13 +112,13 @@ export default function TaskForm({ employees, onSubmit, onClose }: TaskFormProps
                   errors.name ? 'border-destructive' : 'border-border'
                 }`}
               />
-              {errors.name && <p className="text-sm text-destructive mt-1">{errors.name}</p>}
+              {errors.name && (
+                <p className="text-sm text-destructive mt-1 text-red-800">{errors.name}</p>
+              )}
             </motion.div>
 
             <motion.div variants={itemVariants}>
-              <label className="block text-sm font-medium text-foreground mb-2">
-                Description *
-              </label>
+              <label className="block text-sm font-medium text-foreground mb-2">Description</label>
               <textarea
                 value={formData.description}
                 onChange={(e) => setFormData({ ...formData, description: e.target.value })}
@@ -130,12 +129,14 @@ export default function TaskForm({ employees, onSubmit, onClose }: TaskFormProps
                 }`}
               />
               {errors.description && (
-                <p className="text-sm text-destructive mt-1">{errors.description}</p>
+                <p className="text-sm text-destructive mt-1 text-red-800">{errors.description}</p>
               )}
             </motion.div>
 
             <motion.div variants={itemVariants}>
-              <label className="block text-sm font-medium text-foreground mb-2">Assign To *</label>
+              <label className="block text-sm font-medium text-foreground mb-2">
+                Assign To <span className="text-red-800">*</span>
+              </label>
               <div className="relative">
                 <motion.button
                   type="button"
@@ -186,7 +187,7 @@ export default function TaskForm({ employees, onSubmit, onClose }: TaskFormProps
                 )}
               </div>
               {errors.employeeId && (
-                <p className="text-sm text-destructive mt-1">{errors.employeeId}</p>
+                <p className="text-sm text-destructive mt-1 text-red-800">{errors.employeeId}</p>
               )}
             </motion.div>
           </motion.div>

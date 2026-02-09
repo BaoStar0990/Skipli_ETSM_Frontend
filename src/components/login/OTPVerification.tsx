@@ -80,6 +80,9 @@ export default function OTPVerification({
 
   const mutationSMSValidation = useMutation({
     mutationFn: authApi.validateAccessCode,
+    onSuccess: (data) => {
+      localStorage.setItem('id', data.data.user.id)
+    },
     onError: (error) => {
       console.error('Error sending access code:', error)
       setErrorMessage(error.message)
@@ -90,6 +93,9 @@ export default function OTPVerification({
 
   const mutationEmailValidation = useMutation({
     mutationFn: authApi.validateEmailCode,
+    onSuccess: (data) => {
+      localStorage.setItem('id', data.data.user.id)
+    },
     onError: (error) => {
       console.error('Error sending access code:', error)
       setErrorMessage(error.message)

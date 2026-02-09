@@ -1,6 +1,6 @@
 import Button from '@mui/material/Button'
 import { AnimatePresence, motion } from 'motion/react'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import CloseIcon from '@mui/icons-material/Close'
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 import type { UserDTO } from '../../services/dto/user.dto'

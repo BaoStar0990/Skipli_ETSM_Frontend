@@ -7,6 +7,7 @@ import GroupsIcon from '@mui/icons-material/Groups'
 import { useNavigate } from 'react-router-dom'
 import { useMutation } from '@tanstack/react-query'
 import authApi from '../../services/apis/auth-api'
+import MessageIcon from '@mui/icons-material/Message'
 
 interface DashboardLayoutProps {
   activeTab: TabType
@@ -29,6 +30,7 @@ export default function DashBoardLayout({
   const handleLogout = async () => {
     await mutation.mutateAsync()
     localStorage.removeItem('userRole')
+    localStorage.removeItem('id')
     navigate('/', { replace: true })
   }
 
@@ -48,7 +50,12 @@ export default function DashBoardLayout({
       label: 'Task for Employee',
       icon: AssignmentIcon,
     },
-  ].filter((tab) => !isEmployee || tab.id === 'TASKS')
+    {
+      id: 'CHAT' as TabType,
+      label: 'Chat',
+      icon: MessageIcon,
+    },
+  ].filter((tab) => !isEmployee || ['TASKS', 'CHAT'].includes(tab.id))
 
   return (
     <div className="flex h-screen bg-background">

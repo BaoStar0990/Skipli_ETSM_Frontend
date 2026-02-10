@@ -1,30 +1,25 @@
 import { useState, useRef, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import type { Chat } from './ChatList'
 import Button from '@mui/material/Button'
 import ArrowBackIcon from '@mui/icons-material/ArrowBack'
 import MoreVertIcon from '@mui/icons-material/MoreVert'
 import SendIcon from '@mui/icons-material/Send'
 import { socket } from '../../services/socket/socket-io'
-
-export interface Message {
-  id: string
-  sender: 'user' | 'other'
-  senderName: string
-  content: string
-  timestamp: string
-  avatar: string
-}
+import type { UserDTO } from '../../services/dto/user.dto'
+import type { ChatDTO } from '../../services/dto/chat.dto'
+import chatApi from '../../services/apis/chat-api'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import type { MessageDTO } from '../../services/dto/message.dto'
 
 interface ChatboxProps {
-  chat: Chat
-  messages: Message[]
-  onSendMessage: (content: string) => void
+  chat: ChatDTO
   onBack: () => void
+  employee?: UserDTO
 }
 
-export default function Chatbox({ chat, messages, onSendMessage, onBack }: ChatboxProps) {
+export default function Chatbox({ chat, onBack, employee }: ChatboxProps) {
   const [messageInput, setMessageInput] = useState('')
+  const [messages, setMessages] = useState<MessageDTO[]>([])
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const userId = localStorage.getItem('id') || ''
 
@@ -32,17 +27,52 @@ export default function Chatbox({ chat, messages, onSendMessage, onBack }: Chatb
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
   }
 
+  const queryClient = useQueryClient()
+
+  const { data: chats } = useQuery({
+    queryKey: ['chats', chat.id],
+    queryFn: () => chatApi.getChatById(chat.id),
+  })
+
+  const mutationSendMessage = useMutation({
+    mutationFn: (data: MessageDTO) => chatApi.sendMessage(data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['chats', userId] })
+    },
+  })
+
+  useEffect(() => {
+    setMessages(chats?.chatHistory || [])
+  }, [chats?.chatHistory])
+
   useEffect(() => {
     scrollToBottom()
   }, [messages])
 
   useEffect(() => {
-    socket.emit('join-room', { userId, peerId: chat.id })
+    socket.emit('join-room', { userId, peerId: employee?.id })
+
+    socket.on('connected', (message) => {
+      console.log('Received message:', message)
+    })
+
+    socket.on('send-message', (message) => {
+      setMessages((prevMessages) => [...prevMessages, message])
+    })
+
+    return () => {
+      socket.off('send-message')
+    }
   }, [userId, chat.id])
 
-  const handleSend = () => {
+  const handleSend = async () => {
     if (messageInput.trim()) {
-      onSendMessage(messageInput)
+      const data: MessageDTO = {
+        senderId: userId,
+        receiverId: employee?.id || '',
+        content: messageInput.trim(),
+      }
+      await mutationSendMessage.mutateAsync(data)
       setMessageInput('')
     }
   }
@@ -56,8 +86,7 @@ export default function Chatbox({ chat, messages, onSendMessage, onBack }: Chatb
 
   return (
     <div className="h-full flex flex-col bg-background">
-      {/* Header */}
-      <div className="flex items-center justify-between p-6 border-b border-border bg-card shadow-sm">
+      <div className="flex items-center justify-between p-3 border-b border-border bg-card shadow-sm">
         <motion.button
           onClick={onBack}
           whileHover={{ scale: 1.1 }}
@@ -69,7 +98,7 @@ export default function Chatbox({ chat, messages, onSendMessage, onBack }: Chatb
         </motion.button>
 
         <div className="flex-1 text-center">
-          <h2 className="text-xl font-bold text-foreground">{chat.name}</h2>
+          <h2 className="text-xl font-bold text-foreground">{employee?.name}</h2>
           <p className="text-xs text-muted-foreground mt-1">Active now</p>
         </div>
 
@@ -82,40 +111,39 @@ export default function Chatbox({ chat, messages, onSendMessage, onBack }: Chatb
         </motion.button>
       </div>
 
-      {/* Messages */}
       <div className="flex-1 overflow-y-auto p-6 space-y-4">
         <AnimatePresence>
-          {messages.map((message) => (
+          {messages?.map((message) => (
             <motion.div
               key={message.id}
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -10 }}
               transition={{ duration: 0.2 }}
-              className={`flex ${message.sender === 'user' ? 'justify-end' : 'justify-start'}`}
+              className={`flex ${message.senderId === userId ? 'justify-end' : 'justify-start'}`}
             >
               <div
                 className={`max-w-xs lg:max-w-md px-4 py-3 rounded-lg ${
-                  message.sender === 'user'
+                  message.senderId === userId
                     ? 'bg-primary text-primary-foreground rounded-br-none'
                     : 'bg-secondary text-foreground rounded-bl-none border border-border'
                 }`}
               >
-                {message.sender !== 'user' && (
-                  <p className="text-xs font-medium mb-1 opacity-70">{message.senderName}</p>
+                {message.senderId !== userId && (
+                  <p className="text-xs font-medium mb-1 opacity-70">{employee?.name}</p>
                 )}
                 <p className="text-sm break-words">{message.content}</p>
                 <p
                   className={`text-xs mt-1.5 ${
-                    message.sender === 'user'
+                    message.senderId === userId
                       ? 'text-primary-foreground/70'
                       : 'text-muted-foreground'
                   }`}
                 >
-                  {new Date(message.timestamp).toLocaleTimeString([], {
+                  {/* {new Date(message.timestamp).toLocaleTimeString([], {
                     hour: '2-digit',
                     minute: '2-digit',
-                  })}
+                  })} */}
                 </p>
               </div>
             </motion.div>
@@ -124,7 +152,6 @@ export default function Chatbox({ chat, messages, onSendMessage, onBack }: Chatb
         <div ref={messagesEndRef} />
       </div>
 
-      {/* Input */}
       <div className="p-6 border-t border-border bg-card">
         <div className="flex gap-3">
           <input

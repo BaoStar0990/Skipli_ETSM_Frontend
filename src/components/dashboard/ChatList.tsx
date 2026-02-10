@@ -3,10 +3,11 @@ import { motion } from 'framer-motion'
 import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline'
 import ChatIcon from '@mui/icons-material/Chat'
 import type { ChatDTO } from '../../services/dto/chat.dto'
+import type { UserDTO } from '../../services/dto/user.dto'
 
 interface ChatListProps {
   chats: ChatDTO[]
-  onSelectChat: (chat: ChatDTO) => void
+  onSelectChat: (chat: ChatDTO, employee: UserDTO) => void
   onCreateChat: () => void
 }
 
@@ -38,7 +39,7 @@ export default function ChatList({ chats, onSelectChat, onCreateChat }: ChatList
             {chats.map((chat: ChatDTO, index) => (
               <motion.button
                 key={chat.id}
-                onClick={() => onSelectChat(chat)}
+                onClick={() => onSelectChat(chat, chat.peerUser)}
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.2, delay: index * 0.05 }}

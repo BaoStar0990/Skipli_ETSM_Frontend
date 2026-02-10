@@ -3,18 +3,13 @@ import { motion, AnimatePresence } from 'framer-motion'
 import Button from '@mui/material/Button'
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 import CloseIcon from '@mui/icons-material/Close'
-
-export interface Employee {
-  id: string
-  name: string
-  avatar?: string
-}
+import type { UserDTO } from '../../services/dto/user.dto'
 
 interface NewChatDialogProps {
-  employees: Employee[]
-  onCreateChat: (employee: Employee) => void
+  employees: UserDTO[]
+  onCreateChat: (employee: UserDTO) => void
   onClose: () => void
-  existingChatIds?: string[]
+  existingChatIds?: (string | null)[]
 }
 
 export default function NewChatDialog({
@@ -24,11 +19,11 @@ export default function NewChatDialog({
   existingChatIds = [],
 }: NewChatDialogProps) {
   const [isOpen, setIsOpen] = useState(false)
-  const [selectedEmployee, setSelectedEmployee] = useState<Employee | null>(null)
+  const [selectedEmployee, setSelectedEmployee] = useState<UserDTO | null>(null)
 
   const availableEmployees = employees.filter((emp) => !existingChatIds.includes(emp.id))
 
-  const handleSelectEmployee = (employee: Employee) => {
+  const handleSelectEmployee = (employee: UserDTO) => {
     setSelectedEmployee(employee)
     setIsOpen(false)
   }
@@ -106,7 +101,7 @@ export default function NewChatDialog({
                             className="w-full px-4 py-3 text-left text-foreground hover:bg-secondary transition-colors border-b border-border last:border-b-0 flex items-center gap-3"
                           >
                             <div className="w-8 h-8 bg-primary text-primary-foreground rounded-full flex items-center justify-center text-xs font-bold">
-                              {employee.avatar || employee.name.substring(0, 2).toUpperCase()}
+                              {employee.name && employee.name.substring(0, 2).toUpperCase()}
                             </div>
                             <span>{employee.name}</span>
                           </motion.button>

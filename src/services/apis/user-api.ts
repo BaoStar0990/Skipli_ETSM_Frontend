@@ -15,7 +15,7 @@ class UserAPI {
     const res = await axiosInstance.get(`${this.API_URL}`).catch((error) => {
       throw new Error(error.response?.data?.message || 'Failed to fetch employees')
     })
-    return res.data.data as Promise<UserDTO[]>
+    return res.data.data as UserDTO[]
   }
 
   createEmployee = async (data: Omit<UserDTO, 'id' | 'username' | 'password'>) => {

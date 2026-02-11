@@ -1,6 +1,10 @@
 # ETSM Frontend
 
-ETSM Frontend is a React + TypeScript application built with Vite.
+ETSM Frontend is a **_React_** + **_TypeScript_** application built with **_Vite_**.
+
+- App using two popular CSS frameworks for UI custom and component reuse is **_TailwindCSS_** and **_Material_**.
+
+- Also using supportive libraries like **_React Router_** for page routing, **_Tanstack Query_** and **_Axios_** for API calls, **_Frame Motion_** for UX, **_Socket.io Client_** for real-time chat.
 
 ## Project Structure
 

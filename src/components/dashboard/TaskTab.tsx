@@ -149,15 +149,17 @@ export default function TaskTab() {
                       <h3 className="text-lg font-semibold text-foreground">{task.name}</h3>
                       <p className="text-sm text-muted-foreground mt-1">{task.description}</p>
                     </div>
-                    <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>
-                      <Button
-                        onClick={() => handleDeleteTask(task.id)}
-                        variant="outlined"
-                        className="gap-2 text-destructive hover:text-destructive hover:bg-destructive/10"
-                      >
-                        <DeleteIcon className="w-4 h-4" />
-                      </Button>
-                    </motion.div>
+                    {!isEmployee && (
+                      <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>
+                        <Button
+                          onClick={() => handleDeleteTask(task.id)}
+                          variant="outlined"
+                          className="gap-2 text-destructive hover:text-destructive hover:bg-destructive/10"
+                        >
+                          <DeleteIcon className="w-4 h-4" />
+                        </Button>
+                      </motion.div>
+                    )}
                   </div>
 
                   <div

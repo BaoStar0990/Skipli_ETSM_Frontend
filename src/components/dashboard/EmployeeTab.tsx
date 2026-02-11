@@ -151,14 +151,13 @@ export default function EmployeeTab() {
                   </div>
 
                   <div className="flex gap-2 ml-6">
-                    <Button
+                    {/* <Button
                       // onClick={() => handleEdit(employee)}
                       variant="contained"
                       className="gap-2"
                     >
                       <MessageIcon className="w-4 h-4" />
-                      {/* Message */}
-                    </Button>
+                    </Button> */}
                     <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>
                       <Button
                         onClick={() => handleEdit(employee)}

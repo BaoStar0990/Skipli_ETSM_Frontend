@@ -115,3 +115,7 @@ Vite will print the local URL in the terminal (typically http://localhost:5173).
 ### Employee Dashboard Page
 
 ![Login Method Selection Page](./public/screenshots/employee/employee4.png)
+
+### Employee Credential Page
+
+![Employee Credential Page](./public/screenshots/employee/employee5.png)

@@ -22,6 +22,11 @@ export default function ConfirmationForm() {
   const [errorMessage, setErrorMessage] = useState('')
   const [isErrorOpen, setIsErrorOpen] = useState(false)
 
+  const userNameRegex = /^[a-zA-Z][a-zA-Z0-9_]{2,19}$/
+  const isUsernameValid = userNameRegex.test(username)
+  const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/
+  const isPasswordValid = passwordRegex.test(password)
+
   const mutation = useMutation({
     mutationFn: (data: { username: string; password: string }) =>
       userApi.accountConfirmation(id!, data),
@@ -35,7 +40,7 @@ export default function ConfirmationForm() {
 
   const handleConfirmation = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (!username.trim() || !password.trim()) return
+    if (!username.trim() || !password.trim() || !isPasswordValid || !isUsernameValid) return
     setIsLoading(true)
     const data: { username: string; password: string } = { username, password }
     await mutation.mutateAsync(data)
@@ -79,37 +84,51 @@ export default function ConfirmationForm() {
             className="h-12 text-base"
             autoFocus
           />
+          {!isUsernameValid && username.trim() && (
+            <p className="text-sm text-red-500">
+              Username must start with a letter and can contain letters, numbers, and underscores.
+              Length should be between 3 and 20 characters.
+            </p>
+          )}
         </div>
-        <div className="flex flex-col gap-2">
-          <label htmlFor="password" className="text-foreground">
-            Password
-          </label>
-          <div className="relative">
-            <Input
-              id="password"
-              type={showPassword ? 'text' : 'password'}
-              placeholder="Enter your password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="h-12 w-full text-base"
-            />
-            <button
-              type="button"
-              onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground transition-colors hover:text-foreground"
-              aria-label={showPassword ? 'Hide password' : 'Show password'}
-            >
-              {showPassword ? (
-                <VisibilityOffIcon className="h-5 w-5" />
-              ) : (
-                <VisibilityIcon className="h-5 w-5" />
-              )}
-            </button>
-          </div>
+        <div className="flex items-center gap-2">
+          <Input
+            id="password"
+            type={showPassword ? 'text' : 'password'}
+            placeholder="Enter your password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            className="h-12 flex-1 text-base"
+          />
+
+          <button
+            type="button"
+            onClick={() => setShowPassword(!showPassword)}
+            className="h-12 px-3 text-muted-foreground transition-colors hover:text-foreground"
+            aria-label={showPassword ? 'Hide password' : 'Show password'}
+          >
+            {showPassword ? (
+              <VisibilityOffIcon className="h-5 w-5" />
+            ) : (
+              <VisibilityIcon className="h-5 w-5" />
+            )}
+          </button>
         </div>
+        {!isPasswordValid && password.trim() && (
+          <p className="text-sm text-red-500">
+            Password must contain at least one uppercase letter, one lowercase letter, one number,
+            and one special character. Length should be at least 8 characters.
+          </p>
+        )}
         <Button
           type="submit"
-          disabled={!username.trim() || !password.trim() || isLoading}
+          disabled={
+            !username.trim() ||
+            !password.trim() ||
+            isLoading ||
+            !isPasswordValid ||
+            !isUsernameValid
+          }
           className="h-12 w-full text-base font-medium bg-accent text-accent-foreground hover:bg-accent/90"
         >
           {isLoading ? (

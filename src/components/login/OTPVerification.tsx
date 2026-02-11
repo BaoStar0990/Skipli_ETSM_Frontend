@@ -81,7 +81,8 @@ export default function OTPVerification({
   const mutationSMSValidation = useMutation({
     mutationFn: authApi.validateAccessCode,
     onSuccess: (data) => {
-      localStorage.setItem('id', data.data.user.id)
+      localStorage.setItem('id', data.data.id)
+      localStorage.setItem('phoneNumber', data.data.phoneNumber)
     },
     onError: (error) => {
       console.error('Error sending access code:', error)
@@ -94,7 +95,7 @@ export default function OTPVerification({
   const mutationEmailValidation = useMutation({
     mutationFn: authApi.validateEmailCode,
     onSuccess: (data) => {
-      localStorage.setItem('id', data.data.user.id)
+      localStorage.setItem('id', data.data.id)
     },
     onError: (error) => {
       console.error('Error sending access code:', error)

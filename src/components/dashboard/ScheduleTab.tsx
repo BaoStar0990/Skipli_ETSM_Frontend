@@ -12,6 +12,7 @@ import type { UserDTO } from '../../services/dto/user.dto'
 import type { WorkScheduleDTO } from '../../services/dto/work-schedule.dto'
 import type { WorkDayDTO } from '../../services/dto/work-day.dto'
 import scheduleApi from '../../services/apis/schedule-api'
+import PersonIcon from '@mui/icons-material/Person'
 
 export default function ScheduleTab() {
   const [isFormOpen, setIsFormOpen] = useState(false)
@@ -154,7 +155,7 @@ export default function ScheduleTab() {
                   <div className="flex items-start justify-between">
                     <div>
                       <h3 className="text-lg font-semibold text-foreground mb-2">
-                        Schedule #{schedule.id!.slice(0, 8).toUpperCase()}
+                        Schedule #{schedule.id!.toUpperCase()}
                       </h3>
                     </div>
                     <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>
@@ -220,6 +221,18 @@ export default function ScheduleTab() {
                             hours/day avg
                           </p>
                         )}
+                      </div>
+                    </div>
+
+                    <div className="flex gap-3">
+                      <PersonIcon className="w-5 h-5 text-accent flex-shrink-0 mt-0.5" />
+                      <div>
+                        <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+                          Assigned to
+                        </p>
+                        <p className="text-sm text-foreground font-medium mt-1">
+                          {schedule.employee ? schedule.employee.name : 'Unknown'}
+                        </p>
                       </div>
                     </div>
                   </div>

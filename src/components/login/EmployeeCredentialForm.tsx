@@ -26,7 +26,7 @@ export default function EmployeeCredentialForm({ onSubmit, onBack }: EmployeeCre
   const mutation = useMutation({
     mutationFn: (data: { username: string; password: string }) => authApi.loginUsername(data),
     onSuccess: (data) => {
-      localStorage.setItem('id', data.data.user.id)
+      localStorage.setItem('id', data.data.id)
     },
     onError: (error) => {
       console.error('Error during login:', error)

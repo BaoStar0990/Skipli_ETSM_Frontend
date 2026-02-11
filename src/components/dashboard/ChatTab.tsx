@@ -1,13 +1,14 @@
 import { AnimatePresence, motion } from 'motion/react'
 import ChatList from './ChatList'
 import Chatbox from './ChatBox'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import NewChatDialog from './NewChatForm'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import chatApi from '../../services/apis/chat-api'
 import type { ChatDTO } from '../../services/dto/chat.dto'
 import userApi from '../../services/apis/user-api'
 import type { UserDTO } from '../../services/dto/user.dto'
+import { socket } from '../../services/socket/socket-io'
 
 export default function ChatTab() {
   const [selectedChat, setSelectedChat] = useState<ChatDTO | null>(null)
@@ -52,6 +53,15 @@ export default function ChatTab() {
   const handleBack = () => {
     setSelectedChat(null)
   }
+
+  useEffect(() => {
+    socket.on('update-chat', (message) => {
+      queryClient.invalidateQueries({ queryKey: ['chats', userId] })
+    })
+    return () => {
+      socket.off('update-chat')
+    }
+  }, [])
 
   return (
     <div className="h-screen bg-background flex">

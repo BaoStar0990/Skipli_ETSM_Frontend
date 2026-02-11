@@ -1,6 +1,7 @@
 import { motion } from 'motion/react'
 import type { TabType } from '../../constants/DashboardTab.enum'
 import type { ComponentType } from 'react'
+import PersonIcon from '@mui/icons-material/Person'
 
 interface SidebarProps {
   tabs: Array<{
@@ -66,7 +67,23 @@ export default function DashBoardSidebar({
           )
         })}
       </nav>
+
       <div className="px-4 pb-6">
+        <motion.button
+          key={'PROFILE'}
+          onClick={() => {
+            setActiveTab('PROFILE')
+          }}
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.3, delay: 0.4 }}
+          whileHover={{ x: 4 }}
+          whileTap={{ scale: 0.98 }}
+          className={`relative w-full flex items-center gap-3 px-4 pb-5 rounded-md transition-colors bg-sidebar-primary/10 text-sidebar-primary-foreground font-medium`}
+        >
+          <PersonIcon className="w-5 h-5 flex-shrink-0" />
+          <span className="text-sm font-medium">Profile</span>
+        </motion.button>
         <button
           type="button"
           onClick={onLogout}

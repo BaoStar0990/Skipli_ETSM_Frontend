@@ -294,7 +294,7 @@ export default function ScheduleForm({ employees, onSubmit, onClose }: ScheduleF
                           (parseDateInput(endDate).getTime() -
                             parseDateInput(startDate).getTime()) /
                             (1000 * 60 * 60 * 24),
-                        )}{' '}
+                        ) + 1}{' '}
                         days
                       </span>
                     </p>

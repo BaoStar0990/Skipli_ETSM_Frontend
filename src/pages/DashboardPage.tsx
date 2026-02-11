@@ -5,6 +5,7 @@ import ScheduleTab from '../components/dashboard/ScheduleTab'
 import TaskTab from '../components/dashboard/TaskTab'
 import EmployeeTab from '../components/dashboard/EmployeeTab'
 import ChatTab from '../components/dashboard/ChatTab'
+import ProfileTab from '../components/dashboard/ProfileTab'
 
 const DashboardPage = () => {
   const isEmployee = localStorage.getItem('userRole') === 'EMPLOYEE'
@@ -29,6 +30,8 @@ const DashboardPage = () => {
         return <TaskTab />
       case 'CHAT':
         return <ChatTab />
+      case 'PROFILE':
+        return <ProfileTab />
       default:
         return <ScheduleTab />
     }

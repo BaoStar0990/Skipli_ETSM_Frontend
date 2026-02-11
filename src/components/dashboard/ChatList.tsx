@@ -12,6 +12,8 @@ interface ChatListProps {
 }
 
 export default function ChatList({ chats, onSelectChat, onCreateChat }: ChatListProps) {
+  const role = localStorage.getItem('userRole') || ''
+
   return (
     <div className="h-full flex flex-col">
       <div className="flex items-center justify-between pb-6 border-b border-border">
@@ -21,16 +23,18 @@ export default function ChatList({ chats, onSelectChat, onCreateChat }: ChatList
             {chats.length} conversation{chats.length !== 1 ? 's' : ''}
           </p>
         </div>
-        <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-          <Button
-            onClick={onCreateChat}
-            className="bg-primary hover:bg-primary/90 text-primary-foreground gap-2"
-            size="small"
-          >
-            <ChatIcon className="w-4 h-4" />
-            New Chat
-          </Button>
-        </motion.div>
+        {role === 'OWNER' && (
+          <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+            <Button
+              onClick={onCreateChat}
+              className="bg-primary hover:bg-primary/90 text-primary-foreground gap-2"
+              size="small"
+            >
+              <ChatIcon className="w-4 h-4" />
+              New Chat
+            </Button>
+          </motion.div>
+        )}
       </div>
 
       <div className="flex-1 overflow-y-auto">
@@ -81,13 +85,15 @@ export default function ChatList({ chats, onSelectChat, onCreateChat }: ChatList
           >
             <ChatBubbleOutlineIcon className="w-16 h-16 text-muted-foreground/30 mb-4" />
             <p className="text-muted-foreground mb-4">No conversations yet</p>
-            <Button
-              onClick={onCreateChat}
-              className="gap-2 bg-primary hover:bg-primary/90 text-primary-foreground"
-            >
-              <ChatIcon className="w-4 h-4" />
-              Start a Conversation
-            </Button>
+            {role === 'OWNER' && (
+              <Button
+                onClick={onCreateChat}
+                className="gap-2 bg-primary hover:bg-primary/90 text-primary-foreground"
+              >
+                <ChatIcon className="w-4 h-4" />
+                Start a Conversation
+              </Button>
+            )}
           </motion.div>
         )}
       </div>

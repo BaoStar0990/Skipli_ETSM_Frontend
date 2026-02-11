@@ -99,7 +99,7 @@ export default function Chatbox({ chat, onBack, employee }: ChatboxProps) {
 
         <div className="flex-1 text-center">
           <h2 className="text-xl font-bold text-foreground">{employee?.name}</h2>
-          <p className="text-xs text-muted-foreground mt-1">Active now</p>
+          <p className="text-xs text-muted-foreground mt-1">{employee?.username}</p>
         </div>
 
         <motion.button

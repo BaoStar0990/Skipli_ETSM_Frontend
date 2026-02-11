@@ -70,6 +70,12 @@ class UserAPI {
       })
     return res.data.data as TaskResponseDto[]
   }
+  getEmployeeById = async (id: string): Promise<UserDTO> => {
+    const res = await axiosInstance.get(`${this.API_URL}/${id}`).catch((error) => {
+      throw new Error(error.response?.data?.message || 'Failed to fetch employee')
+    })
+    return res.data.data as UserDTO
+  }
 }
 
 export default new UserAPI()

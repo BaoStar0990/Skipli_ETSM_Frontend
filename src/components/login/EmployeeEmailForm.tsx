@@ -6,6 +6,7 @@ import EmailIcon from '@mui/icons-material/Email'
 import { useState } from 'react'
 import { useMutation } from '@tanstack/react-query'
 import authApi from '../../services/apis/auth-api'
+import ErrorSnackbar from '../ErrorSnackbar'
 
 interface EmployeeEmailFormProps {
   onSubmit: (email: string) => void
@@ -15,9 +16,16 @@ interface EmployeeEmailFormProps {
 export default function EmployeeEmailForm({ onSubmit, onBack }: EmployeeEmailFormProps) {
   const [email, setEmail] = useState('')
   const [isLoading, setIsLoading] = useState(false)
+  const [errorMessage, setErrorMessage] = useState('')
+  const [isErrorOpen, setIsErrorOpen] = useState(false)
 
   const mutation = useMutation({
     mutationFn: authApi.loginEmail,
+    onError: (error) => {
+      setIsLoading(false)
+      setErrorMessage(error.message)
+      setIsErrorOpen(true)
+    },
   })
 
   return (
@@ -90,6 +98,11 @@ export default function EmployeeEmailForm({ onSubmit, onBack }: EmployeeEmailFor
           )}
         </Button>
       </form>
+      <ErrorSnackbar
+        isErrorOpen={isErrorOpen}
+        setIsErrorOpen={setIsErrorOpen}
+        errorMessage={errorMessage}
+      />
     </motion.div>
   )
 }

@@ -15,7 +15,7 @@ const LoginPage = () => {
   const [email, setEmail] = useState('')
 
   return (
-    <main className="flex min-h-svh items-center justify-center bg-background px-4 py-8">
+    <main className="flex min-h-screen items-center justify-center bg-background px-4 py-8">
       <div className="pointer-events-none fixed inset-0 overflow-hidden">
         <div className="absolute -right-32 -top-32 h-96 w-96 rounded-full bg-accent/5" />
         <div className="absolute -bottom-48 -left-48 h-[500px] w-[500px] rounded-full bg-accent/3" />

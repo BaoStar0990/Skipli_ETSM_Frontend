@@ -31,6 +31,7 @@ export default function DashBoardLayout({
     await mutation.mutateAsync()
     localStorage.removeItem('userRole')
     localStorage.removeItem('id')
+    localStorage.removeItem('phoneNumber')
     navigate('/', { replace: true })
   }
 

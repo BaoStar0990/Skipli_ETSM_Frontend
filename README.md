@@ -49,3 +49,65 @@ etsm_frontend/
    ```
 
 Vite will print the local URL in the terminal (typically http://localhost:5173).
+
+# Screenshots
+
+## Role Selection
+
+![Role Selection Page](./public/screenshots/roleSelection.png)
+
+## Owner
+
+### Phone number Form
+
+![Phone number Form](./public/screenshots/manager/owner1.png)
+
+### OTP Validation Form
+
+![OTP Validation Form](./public/screenshots/manager/owner2.png)
+
+### Success Login Page
+
+![Success Login Page](./public/screenshots/manager/owner3.png)
+
+### Employee Management Tab
+
+![Employee Management Tab](./public/screenshots/manager/owner4.png)
+
+### Employee Work Schedule Management Tab
+
+![Employee Work Schedule Management Tab](./public/screenshots/manager/owner5.png)
+
+### Task Management Tab
+
+![Task Management Tab](./public/screenshots/manager/owner6.png)
+
+### Chat Tab
+
+![Chat Tab](./public/screenshots/manager/owner7.png)
+
+### Chat Box
+
+![Chat Box](./public/screenshots/manager/owner8.png)
+
+### User Profile Tab
+
+![User Profile Tab](./public/screenshots/manager/owner9.png)
+
+## Employee
+
+### Login Method Selection Page
+
+![Login Method Selection Page](./public/screenshots/employee/employee1.png)
+
+### Credential Login Page
+
+![Credential Login Page](./public/screenshots/employee/employee2.png)
+
+### Email Login Form
+
+![Email Login Form](./public/screenshots/employee/employee3.png)
+
+### Employee Dashboard Page
+
+![Login Method Selection Page](./public/screenshots/employee/employee4.png)

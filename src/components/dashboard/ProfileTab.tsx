@@ -6,6 +6,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import userApi from '../../services/apis/user-api'
 import { useEffect, useState } from 'react'
 import type { UserDTO } from '../../services/dto/user.dto'
+import { motion } from 'motion/react'
 
 const TextFieldTheme = createTheme({
   components: {
@@ -31,7 +32,7 @@ export default function ProfileTab() {
   })
   const [isButtonDisabled, setIsButtonDisabled] = useState(true)
 
-  const { data: user } = useQuery({
+  useQuery({
     queryKey: ['userProfile', userId],
     queryFn: () =>
       userApi.getEmployeeById(userId).then((res) => {
@@ -71,50 +72,76 @@ export default function ProfileTab() {
     <div className="">
       <h2 className="text-2xl font-bold mb-4">Profile</h2>
       <Stack direction={'column'} spacing={2}>
-        <ThemeProvider theme={TextFieldTheme}>
+        <motion.div
+          className="min-w-full"
+          initial={{ opacity: 0, x: -10 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.5 }}
+        >
+          <ThemeProvider theme={TextFieldTheme}>
+            <TextField
+              id="email"
+              label="Email"
+              variant="outlined"
+              required
+              value={profile?.email || ''}
+              onChange={handleFormChange}
+              fullWidth
+            />
+          </ThemeProvider>
+        </motion.div>
+
+        <motion.div
+          className="min-w-full"
+          initial={{ opacity: 0, x: -10 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.5 }}
+        >
+          <ThemeProvider theme={TextFieldTheme}>
+            <TextField
+              id="phone"
+              label="Phone Number"
+              variant="outlined"
+              required
+              value={profile?.phoneNumber || ''}
+              onChange={handleFormChange}
+              fullWidth
+            />
+          </ThemeProvider>
+        </motion.div>
+
+        <motion.div
+          className="min-w-full"
+          initial={{ opacity: 0, x: -10 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.5 }}
+        >
           <TextField
-            id="name"
-            label="Name"
+            id="username"
+            label="Username"
             variant="outlined"
-            required
-            value={profile?.name || ''}
+            value={profile?.username || ''}
             onChange={handleFormChange}
+            fullWidth
           />
-        </ThemeProvider>
-        <ThemeProvider theme={TextFieldTheme}>
+        </motion.div>
+
+        <motion.div
+          className="min-w-full"
+          initial={{ opacity: 0, x: -10 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.5 }}
+        >
           <TextField
-            id="email"
-            label="Email"
+            id="password"
+            label="Password"
+            type="password"
             variant="outlined"
-            required
-            value={profile?.email || ''}
             onChange={handleFormChange}
+            fullWidth
           />
-        </ThemeProvider>
-        <ThemeProvider theme={TextFieldTheme}>
-          <TextField
-            id="phone"
-            label="Phone Number"
-            variant="outlined"
-            required
-            value={profile?.phoneNumber || ''}
-            onChange={handleFormChange}
-          />
-        </ThemeProvider>
-        <TextField
-          id="username"
-          label="Username"
-          variant="outlined"
-          value={profile?.username || ''}
-          onChange={handleFormChange}
-        />
-        <TextField
-          id="password"
-          label="Password"
-          type="password"
-          variant="outlined"
-          onChange={handleFormChange}
-        />
+        </motion.div>
+
         <Button
           disabled={isButtonDisabled}
           variant="contained"

@@ -4,15 +4,23 @@ import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline'
 import ChatIcon from '@mui/icons-material/Chat'
 import type { ChatDTO } from '../../services/dto/chat.dto'
 import type { UserDTO } from '../../services/dto/user.dto'
+import { useQuery } from '@tanstack/react-query'
+import chatApi from '../../services/apis/chat-api'
 
 interface ChatListProps {
-  chats: ChatDTO[]
+  chats?: ChatDTO[]
   onSelectChat: (chat: ChatDTO, employee: UserDTO) => void
   onCreateChat: () => void
 }
 
-export default function ChatList({ chats, onSelectChat, onCreateChat }: ChatListProps) {
+export default function ChatList({ onSelectChat, onCreateChat }: ChatListProps) {
   const role = localStorage.getItem('userRole') || ''
+  const userId = localStorage.getItem('id') || ''
+
+  const { data: chats } = useQuery({
+    queryKey: ['chats', userId],
+    queryFn: () => chatApi.getUserChats(userId),
+  })
 
   return (
     <div className="h-full flex flex-col">
@@ -20,7 +28,7 @@ export default function ChatList({ chats, onSelectChat, onCreateChat }: ChatList
         <div>
           <h2 className="text-2xl font-bold text-foreground">Messages</h2>
           <p className="text-sm text-muted-foreground mt-1">
-            {chats.length} conversation{chats.length !== 1 ? 's' : ''}
+            {chats?.length || 0} conversation{(chats?.length || 0) !== 1 ? 's' : ''}
           </p>
         </div>
         {role === 'OWNER' && (
@@ -38,7 +46,7 @@ export default function ChatList({ chats, onSelectChat, onCreateChat }: ChatList
       </div>
 
       <div className="flex-1 overflow-y-auto">
-        {chats.length > 0 ? (
+        {chats && chats.length > 0 ? (
           <div className="p-4 space-y-2">
             {chats.map((chat: ChatDTO, index) => (
               <motion.button
@@ -56,15 +64,15 @@ export default function ChatList({ chats, onSelectChat, onCreateChat }: ChatList
                       <h3 className="font-semibold text-foreground truncate">
                         {chat.peerUser.name}
                       </h3>
-                      {/* {chat.unread > 0 && (
+                      {chat.isSeen === false && (
                         <motion.span
                           initial={{ scale: 0 }}
                           animate={{ scale: 1 }}
                           className="flex items-center justify-center w-5 h-5 bg-primary text-primary-foreground text-xs font-bold rounded-full flex-shrink-0"
                         >
-                          {chat.unread}
+                          🔵
                         </motion.span>
-                      )} */}
+                      )}
                     </div>
                     <p className="text-sm text-muted-foreground truncate">{chat.lastMessage}</p>
                   </div>

@@ -7,4 +7,5 @@ export type ChatDTO = {
   lastMessage: string
   updatedAt: string
   chatHistory: MessageDTO[]
+  isSeen: boolean | null
 }

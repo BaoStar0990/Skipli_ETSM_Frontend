@@ -18,7 +18,6 @@ const axiosInstance = axios.create({
 
 axiosInstance.interceptors.request.use(
   (config) => {
-    // You can add authorization headers or other configurations here
     return config
   },
   (error) => {

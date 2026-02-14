@@ -332,7 +332,7 @@ export default function ScheduleForm({ employees, onSubmit, onClose }: ScheduleF
                         whileTap={{ scale: 0.95 }}
                         onClick={() => toggleDay(day.id)}
                         className={`p-3 rounded-lg border-2 transition-all font-medium text-sm ${
-                          selectedDays.includes(day.id)
+                          !selectedDays.includes(day.id)
                             ? 'border-primary bg-white/10 text-primary'
                             : 'border-border bg-sky-500 text-foreground hover:border-primary/50'
                         }`}

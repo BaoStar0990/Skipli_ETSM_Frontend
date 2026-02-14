@@ -9,7 +9,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import userApi from '../../services/apis/user-api'
 import type { UserDTO } from '../../services/dto/user.dto'
 import GroupsIcon from '@mui/icons-material/Groups'
-import MessageIcon from '@mui/icons-material/Message'
+// import MessageIcon from '@mui/icons-material/Message'
 
 export default function EmployeeTab() {
   const { data: employeesData } = useQuery({
@@ -137,27 +137,10 @@ export default function EmployeeTab() {
                         <p className="text-muted-foreground">Phone number</p>
                         <p className="text-foreground font-medium">{employee.phoneNumber}</p>
                       </div>
-                      {/* <div>
-                        <p className="text-muted-foreground">Username</p>
-                        <p className="text-foreground font-medium">
-                          {new Date(employee.joinDate).toLocaleDateString()}
-                        </p>
-                      </div>
-                      <div>
-                        <p className="text-muted-foreground">Salary</p>
-                        <p className="text-foreground font-medium">{employee.salary}</p>
-                      </div> */}
                     </div>
                   </div>
 
                   <div className="flex gap-2 ml-6">
-                    {/* <Button
-                      // onClick={() => handleEdit(employee)}
-                      variant="contained"
-                      className="gap-2"
-                    >
-                      <MessageIcon className="w-4 h-4" />
-                    </Button> */}
                     <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>
                       <Button
                         onClick={() => handleEdit(employee)}
